@@ -11,7 +11,8 @@
 
 #include "runner.h"
 
-int child_process(const struct config *_config, const struct *_result) {
+int child_process(const struct config *_config, const struct result *_result)
+{
 	FILE *output_file = NULL;
 	FILE *input_file = NULL;
 	FILE *error_file = NULL;
