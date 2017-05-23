@@ -94,6 +94,8 @@ int main()
 			{
 				_config.error_path = STRVALUE(error_path);
 			}
+			struct result _result;
+			run(&_config, &_result);
 		}
 		else
 		{

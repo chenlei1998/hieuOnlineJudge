@@ -71,3 +71,5 @@ struct result {
     int result;
 	char error_msg[MSGLEN];
 };
+
+void run(const struct config *_config, const struct *_result);
