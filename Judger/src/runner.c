@@ -5,7 +5,6 @@
 #include <signal.h>
 #include <getopt.h>
 #include <limits.h>
-#include <string.h>
 #include <pthread.h>
 #include <sys/resource.h>
 
