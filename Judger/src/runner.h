@@ -80,4 +80,4 @@ struct timeout_killer_args
     int timeout;
 };
 
-void run(const struct config *_config, const struct result *_result);
+void run(struct config *_config, struct result *_result);

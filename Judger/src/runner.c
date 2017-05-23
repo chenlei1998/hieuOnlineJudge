@@ -10,7 +10,7 @@
 
 #include "runner.h"
 
-int child_process(const struct config *_config, const struct result *_result)
+int child_process(struct config *_config, struct result *_result)
 {
 	FILE *output_file = NULL;
 	FILE *input_file = NULL;
@@ -161,7 +161,7 @@ void *timeout_killer(void *timeout_killer_args) {
     return NULL;
 }
 
-void run(const struct config *_config, const struct result *_result)
+void run(struct config *_config, struct result *_result)
 {
 	pid_t child_pid = fork();
 	if (child_pid < 0)
