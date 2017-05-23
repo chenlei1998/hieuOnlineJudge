@@ -6,6 +6,7 @@
 #include <getopt.h>
 #include <limits.h>
 #include <pthread.h>
+#include <string.h>
 #include <sys/resource.h>
 
 #include "runner.h"
