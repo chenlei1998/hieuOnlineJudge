@@ -163,6 +163,8 @@ void *timeout_killer(void *timeout_killer_args) {
 
 void run(struct config *_config, struct result *_result)
 {
+	struct timeval start, end;
+    gettimeofday(&start, NULL);
 	pid_t child_pid = fork();
 	if (child_pid < 0)
 	{
