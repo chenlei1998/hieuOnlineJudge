@@ -27,7 +27,6 @@ int child_process(const struct config *_config, const struct *_result) {
 		}
 	}
 
-
     // set memory limit
     if (_config->max_memory != UNLIMITED)
 	{
@@ -150,7 +149,7 @@ void *timeout_killer(void *timeout_killer_args) {
     return NULL;
 }
 
-void run(const struct config *_config, const struct *_result)
+void run(const struct config *_config, const struct result *_result)
 {
 	pid_t child_pid = fork();
 	if (child_pid < 0)
