@@ -23,7 +23,8 @@ int child_process(const struct config *_config, const struct result *_result)
 		max_stack.rlim_cur = max_stack.rlim_max = (rlim_t) (_config->max_stack);
 		if (setrlimit(RLIMIT_STACK, &max_stack) != 0)
 		{
-			CHILD_ERROR_RETURN(SETRLIMIT_FAILED);
+			strcpy(_result->error_msg, SETRLIMIT_FAILED);
+			CHILD_ERROR_RETURN();
 		}
 	}
 
@@ -34,7 +35,8 @@ int child_process(const struct config *_config, const struct result *_result)
         max_memory.rlim_cur = max_memory.rlim_max = (rlim_t) (_config->max_memory);
         if (setrlimit(RLIMIT_AS, &max_memory) != 0)
 		{
-            CHILD_ERROR_RETURN(SETRLIMIT_FAILED);
+			strcpy(_result->error_msg, SETRLIMIT_FAILED);
+            CHILD_ERROR_RETURN();
         }
     }
 
@@ -44,7 +46,8 @@ int child_process(const struct config *_config, const struct result *_result)
         struct rlimit max_cpu_time;
         max_cpu_time.rlim_cur = max_cpu_time.rlim_max = (rlim_t) (_config->max_cpu_time);
         if (setrlimit(RLIMIT_CPU, &max_cpu_time) != 0) {
-            CHILD_ERROR_RETURN(SETRLIMIT_FAILED);
+			strcpy(_result->error_msg, SETRLIMIT_FAILED);
+            CHILD_ERROR_RETURN();
         }
     }
 
@@ -55,7 +58,8 @@ int child_process(const struct config *_config, const struct result *_result)
         max_process_number.rlim_cur = max_process_number.rlim_max = (rlim_t) _config->max_process_number;
         if (setrlimit(RLIMIT_NPROC, &max_process_number) != 0)
 		{
-            CHILD_ERROR_RETURN(SETRLIMIT_FAILED);
+			strcpy(_result->error_msg, SETRLIMIT_FAILED);
+            CHILD_ERROR_RETURN();
         }
     }
 
@@ -66,7 +70,8 @@ int child_process(const struct config *_config, const struct result *_result)
         max_output_size.rlim_cur = max_output_size.rlim_max = (rlim_t ) _config->max_output_size;
         if (setrlimit(RLIMIT_FSIZE, &max_output_size) != 0)
 		{
-            CHILD_ERROR_RETURN(SETRLIMIT_FAILED);
+			strcpy(_result->error_msg, SETRLIMIT_FAILED);
+            CHILD_ERROR_RETURN();
         }
     }
 
@@ -74,15 +79,16 @@ int child_process(const struct config *_config, const struct result *_result)
 	{
         input_file = fopen(_config->input_path, "r");
         if (input_file == NULL) {
-            CHILD_ERROR_RETURN(DUP2_FAILED);
+			strcpy(_result->error_msg, DUP2_FAILED);
+            CHILD_ERROR_RETURN();
         }
         // redirect file -> stdin
         // On success, these system calls return the new descriptor.
         // On error, -1 is returned, and errno is set appropriately.
         if (dup2(fileno(input_file), fileno(stdin)) == -1)
 		{
-            // todo log
-            CHILD_ERROR_RETURN(DUP2_FAILED);
+			strcpy(_result->error_msg, DUP2_FAILED);
+            CHILD_ERROR_RETURN();
         }
     }
 
@@ -90,12 +96,14 @@ int child_process(const struct config *_config, const struct result *_result)
 	{
         output_file = fopen(_config->output_path, "w");
         if (output_file == NULL) {
-            CHILD_ERROR_RETURN(DUP2_FAILED);
+			strcpy(_result->error_msg, DUP2_FAILED);
+            CHILD_ERROR_RETURN();
         }
         // redirect stdout -> file
         if (dup2(fileno(output_file), fileno(stdout)) == -1)
 		{
-            CHILD_ERROR_RETURN(DUP2_FAILED);
+			strcpy(_result->error_msg, DUP2_FAILED);
+            CHILD_ERROR_RETURN();
         }
     }
 
@@ -111,17 +119,21 @@ int child_process(const struct config *_config, const struct result *_result)
             error_file = fopen(_config->error_path, "w");
             if (error_file == NULL)
 			{
-                CHILD_ERROR_RETURN(DUP2_FAILED);
+				strcpy(_result->error_msg, DUP2_FAILED);
+				CHILD_ERROR_RETURN();
             }
         }
         // redirect stderr -> file
         if (dup2(fileno(error_file), fileno(stderr)) == -1)
 		{
-            CHILD_ERROR_RETURN(DUP2_FAILED);
+			strcpy(_result->error_msg, DUP2_FAILED);
+			CHILD_ERROR_RETURN();
         }
     }
 	execve(_config->exe_path, _config->args, _config->env);
-	CHILD_ERROR_RETURN(EXECVE_FAILED);
+	strcpy(_result->error_msg, EXECVE_FAILED);
+	CHILD_ERROR_RETURN();
+
 }
 
 int kill_pid(pid_t pid) {

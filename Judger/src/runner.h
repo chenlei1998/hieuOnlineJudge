@@ -13,12 +13,11 @@
 #define ENV_MAX_NUMBER 256
 #define MSGLEN 128
 
-#define CHILD_ERROR_RETURN(msg)\
+#define CHILD_ERROR_RETURN()\
 	{\
 		fclose(input_file);\
 		fclose(output_file);\
 		fclose(error_file);\
-		strcpy(_result->error_msg, msg);\
 		raise(SIGUSR1);\
 		return -1;\
 	}
