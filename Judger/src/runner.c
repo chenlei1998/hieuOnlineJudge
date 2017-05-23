@@ -24,8 +24,7 @@ int child_process(struct config *_config, struct result *_result)
 		max_stack.rlim_cur = max_stack.rlim_max = (rlim_t) (_config->max_stack);
 		if (setrlimit(RLIMIT_STACK, &max_stack) != 0)
 		{
-			strcpy(_result->error_msg, SETRLIMIT_FAILED);
-			CHILD_ERROR_RETURN();
+			CHILD_ERROR_RETURN(SETRLIMIT_FAILED);
 		}
 	}
 
@@ -36,8 +35,7 @@ int child_process(struct config *_config, struct result *_result)
         max_memory.rlim_cur = max_memory.rlim_max = (rlim_t) (_config->max_memory);
         if (setrlimit(RLIMIT_AS, &max_memory) != 0)
 		{
-			strcpy(_result->error_msg, SETRLIMIT_FAILED);
-            CHILD_ERROR_RETURN();
+            CHILD_ERROR_RETURN(SETRLIMIT_FAILED);
         }
     }
 
@@ -47,8 +45,7 @@ int child_process(struct config *_config, struct result *_result)
         struct rlimit max_cpu_time;
         max_cpu_time.rlim_cur = max_cpu_time.rlim_max = (rlim_t) (_config->max_cpu_time);
         if (setrlimit(RLIMIT_CPU, &max_cpu_time) != 0) {
-			strcpy(_result->error_msg, SETRLIMIT_FAILED);
-            CHILD_ERROR_RETURN();
+            CHILD_ERROR_RETURN(SETRLIMIT_FAILED);
         }
     }
 
@@ -59,8 +56,7 @@ int child_process(struct config *_config, struct result *_result)
         max_process_number.rlim_cur = max_process_number.rlim_max = (rlim_t) _config->max_process_number;
         if (setrlimit(RLIMIT_NPROC, &max_process_number) != 0)
 		{
-			strcpy(_result->error_msg, SETRLIMIT_FAILED);
-            CHILD_ERROR_RETURN();
+            CHILD_ERROR_RETURN(SETRLIMIT_FAILED);
         }
     }
 
@@ -71,8 +67,7 @@ int child_process(struct config *_config, struct result *_result)
         max_output_size.rlim_cur = max_output_size.rlim_max = (rlim_t ) _config->max_output_size;
         if (setrlimit(RLIMIT_FSIZE, &max_output_size) != 0)
 		{
-			strcpy(_result->error_msg, SETRLIMIT_FAILED);
-            CHILD_ERROR_RETURN();
+            CHILD_ERROR_RETURN(SETRLIMIT_FAILED);
         }
     }
 
@@ -80,16 +75,14 @@ int child_process(struct config *_config, struct result *_result)
 	{
         input_file = fopen(_config->input_path, "r");
         if (input_file == NULL) {
-			strcpy(_result->error_msg, DUP2_FAILED);
-            CHILD_ERROR_RETURN();
+            CHILD_ERROR_RETURN(DUP2_FAILED);
         }
         // redirect file -> stdin
         // On success, these system calls return the new descriptor.
         // On error, -1 is returned, and errno is set appropriately.
         if (dup2(fileno(input_file), fileno(stdin)) == -1)
 		{
-			strcpy(_result->error_msg, DUP2_FAILED);
-            CHILD_ERROR_RETURN();
+            CHILD_ERROR_RETURN(DUP2_FAILED);
         }
     }
 
@@ -97,14 +90,12 @@ int child_process(struct config *_config, struct result *_result)
 	{
         output_file = fopen(_config->output_path, "w");
         if (output_file == NULL) {
-			strcpy(_result->error_msg, DUP2_FAILED);
-            CHILD_ERROR_RETURN();
+            CHILD_ERROR_RETURN(DUP2_FAILED);
         }
         // redirect stdout -> file
         if (dup2(fileno(output_file), fileno(stdout)) == -1)
 		{
-			strcpy(_result->error_msg, DUP2_FAILED);
-            CHILD_ERROR_RETURN();
+            CHILD_ERROR_RETURN(DUP2_FAILED);
         }
     }
 
@@ -120,21 +111,17 @@ int child_process(struct config *_config, struct result *_result)
             error_file = fopen(_config->error_path, "w");
             if (error_file == NULL)
 			{
-				strcpy(_result->error_msg, DUP2_FAILED);
-				CHILD_ERROR_RETURN();
+				CHILD_ERROR_RETURN(DUP2_FAILED);
             }
         }
         // redirect stderr -> file
         if (dup2(fileno(error_file), fileno(stderr)) == -1)
 		{
-			strcpy(_result->error_msg, DUP2_FAILED);
-			CHILD_ERROR_RETURN();
+            CHILD_ERROR_RETURN(DUP2_FAILED);
         }
     }
 	execve(_config->exe_path, _config->args, _config->env);
-	strcpy(_result->error_msg, EXECVE_FAILED);
-	CHILD_ERROR_RETURN();
-
+	CHILD_ERROR_RETURN(EXECVE_FAILED);
 }
 
 int kill_pid(pid_t pid) {
@@ -169,7 +156,7 @@ void run(struct config *_config, struct result *_result)
 	pid_t child_pid = fork();
 	if (child_pid < 0)
 	{
-		RUN_ERROR_SET(FORK_FAILED);
+		RUN_ERROR_RETURN(FORK_FAILED);
 	}
 	else if (child_pid == 0)
 	{
