@@ -22,7 +22,7 @@
 		return -1;\
 	}
 
-#define RUN_ERROR_RETURN(msg)\
+#define RUN_ERROR_SET(msg)\
 	{\
 		_result->result = SYSTEM_ERROR;\
 		strcpy(_result->error_msg, msg);\

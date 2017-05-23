@@ -169,7 +169,7 @@ void run(struct config *_config, struct result *_result)
 	pid_t child_pid = fork();
 	if (child_pid < 0)
 	{
-		RUN_ERROR_RETURN(FORK_FAILED);
+		RUN_ERROR_SET(FORK_FAILED);
 	}
 	else if (child_pid == 0)
 	{
@@ -252,5 +252,4 @@ void run(struct config *_config, struct result *_result)
             _result->result = CPU_TIME_LIMIT_EXCEEDED;
         }
 	}
-	return 0;
 }
