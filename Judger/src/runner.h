@@ -35,7 +35,8 @@
 		return -1;\
 	}
 	
-enum {
+enum
+{
 	SUCCESS = 0,
     WRONG_ANSWER = 1,
     CPU_TIME_LIMIT_EXCEEDED = 2,
@@ -45,7 +46,8 @@ enum {
     SYSTEM_ERROR = 6
 };
 
-struct config {
+struct config
+{
     int max_cpu_time;
     int max_real_time;
     long max_memory;
@@ -61,7 +63,8 @@ struct config {
     char *seccomp_rule_name;
 };
 
-struct result {
+struct result
+{
     int cpu_time;
     int real_time;
     long memory;
@@ -69,6 +72,12 @@ struct result {
     int exit_code;
     int result;
 	char error_msg[MSGLEN];
+};
+
+struct timeout_killer_args
+{
+    int pid;
+    int timeout;
 };
 
 void run(const struct config *_config, const struct result *_result);
