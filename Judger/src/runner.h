@@ -1,6 +1,5 @@
 #ifndef JUDGER
 #define JUDGER
-#endif
 
 #define FORK_FAILED "fork failed"
 #define WAIT_FAILED "wait failed"
@@ -82,3 +81,4 @@ struct timeout_killer_args
 };
 
 void run(struct config *_config, struct result *_result);
+#endif

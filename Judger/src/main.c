@@ -96,6 +96,19 @@ int main()
 			}
 			struct result _result;
 			run(&_config, &_result);
+			printf("{\"cpu_time\": %d,\
+				\"real_time\": %d,\
+				\"memory\": %ld,\
+				\"signal\": %d,\
+				\"exit_code\": %d,\
+				\"result\": %d,\
+				\"error_msg\": \"%s\"}\n",
+				_result.cpu_time,
+				_result.real_time,
+				_result.memory,
+				_result.exit_code,
+				_result.result,
+				_result.error_msg);
 		}
 		else
 		{
