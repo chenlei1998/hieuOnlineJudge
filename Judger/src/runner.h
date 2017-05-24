@@ -13,31 +13,31 @@
 #define MSGLEN 128
 
 #define CHILD_ERROR_RETURN(msg)\
-	{\
-		fclose(input_file);\
-		fclose(output_file);\
-		fclose(error_file);\
-		strcpy(_result->error_msg, msg);\
-		raise(SIGUSR1);\
-		return -1;\
-	}
+    {\
+        fclose(input_file);\
+        fclose(output_file);\
+        fclose(error_file);\
+        strcpy(_result->error_msg, msg);\
+        raise(SIGUSR1);\
+        return -1;\
+    }
 
 #define RUN_ERROR_RETURN(msg)\
-	{\
-		_result->result = SYSTEM_ERROR;\
-		strcpy(_result->error_msg, msg);\
-		return;\
-	}
+    {\
+        _result->result = SYSTEM_ERROR;\
+        strcpy(_result->error_msg, msg);\
+        return;\
+    }
 
 #define MAIN_ERROR_EXIT(msg)\
-	{\
-		fprintf(stderr, "{\"error_msg\": \"%s\"}\n", msg);\
-		return -1;\
-	}
-	
+    {\
+        fprintf(stderr, "{\"error_msg\": \"%s\"}\n", msg);\
+        return -1;\
+    }
+    
 enum
 {
-	SUCCESS = 0,
+    SUCCESS = 0,
     WRONG_ANSWER = 1,
     CPU_TIME_LIMIT_EXCEEDED = 2,
     REAL_TIME_LIMIT_EXCEEDED = 3,
@@ -71,7 +71,7 @@ struct result
     int signal;
     int exit_code;
     int result;
-	char error_msg[MSGLEN];
+    char error_msg[MSGLEN];
 };
 
 struct timeout_killer_args
