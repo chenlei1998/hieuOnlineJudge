@@ -132,21 +132,21 @@ static int child_process(struct config *_config, struct result *_result)
         {
             if (c_cpp_seccomp_rules(_config) != SUCCESS)
             {
-                CHILD_ERROR_RETURN(LOAD_SECCOMP_FAILED);
+                CHILD_ERROR_RETURN(LOAD_SECCOMP_FAILED_STR);
             }
         }
         else if (strcmp("general", _config->seccomp_rule_name) == 0)
         {
-            if (general_seccomp_rules(_config) != SUCCESS )
+            if (general_seccomp_rules(_config) != SUCCESS)
             {
-                CHILD_ERROR_RETURN(LOAD_SECCOMP_FAILED);
+                CHILD_ERROR_RETURN(LOAD_SECCOMP_FAILED_STR);
             }
         }
         // other rules
         else
         {
             // rule does not exist
-            CHILD_ERROR_RETURN(LOAD_SECCOMP_FAILED);
+            CHILD_ERROR_RETURN(LOAD_SECCOMP_FAILED_STR);
         }
     }
     execve(_config->exe_path, _config->args, _config->env);
