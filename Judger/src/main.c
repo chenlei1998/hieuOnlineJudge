@@ -68,6 +68,7 @@ int main()
             _config.seccomp_rule_name = STRVALUE(seccomp_rule_name);
             
             _config.args[0] = _config.exe_path;
+            _config.args[1] = NULL;
             _config.env[0] = NULL;
             _config.error_path = NULL;
             if (cJSON_IsArray(args))
