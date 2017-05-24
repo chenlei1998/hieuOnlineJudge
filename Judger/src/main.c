@@ -4,7 +4,7 @@
 #define BUF_SIZE 8192
 #define LONGVALUE(item) (long)(item->valuedouble)
 #define INTVALUE(item) (item->valueint)
-#define STRVALUE(item) (item->string)
+#define STRVALUE(item) (item->valuestring)
 int main()
 {
 	char buffer[BUF_SIZE];
@@ -96,13 +96,7 @@ int main()
 			}
 			struct result _result;
 			run(&_config, &_result);
-			printf("{\"cpu_time\": %d,\
-				\"real_time\": %d,\
-				\"memory\": %ld,\
-				\"signal\": %d,\
-				\"exit_code\": %d,\
-				\"result\": %d,\
-				\"error_msg\": \"%s\"}\n",
+			printf("{\"cpu_time\":%d,\"real_time\":%d,\"memory\":%ld,\"signal\":%d,\"exit_code\":%d,\"result\":%d,\"error_msg\":\"%s\"}\n",
 				_result.cpu_time,
 				_result.real_time,
 				_result.memory,
