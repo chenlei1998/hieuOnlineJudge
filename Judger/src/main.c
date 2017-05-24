@@ -66,7 +66,6 @@ int main()
             _config.output_path = STRVALUE(output_path);
             _config.exe_path = STRVALUE(exe_path);
             _config.seccomp_rule_name = STRVALUE(seccomp_rule_name);
-            
             _config.args[0] = _config.exe_path;
             _config.args[1] = NULL;
             _config.env[0] = NULL;
@@ -74,12 +73,12 @@ int main()
             if (cJSON_IsArray(args))
             {
                 int i;
-                for (i = 1; i < ARGS_MAX_NUMBER && i < cJSON_GetArraySize(args); i++)
+                for (i = 0; i < ARGS_MAX_NUMBER && i < cJSON_GetArraySize(args); i++)
                 {
                     cJSON *item = cJSON_GetArrayItem(args, i);
-                    _config.args[i] = STRVALUE(item);
+                    _config.args[1+i] = STRVALUE(item);
                 }
-                _config.args[i] = NULL;
+                _config.args[1+i] = NULL;
             }
             if (cJSON_IsArray(env))
             {
