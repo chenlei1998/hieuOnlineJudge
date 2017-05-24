@@ -106,6 +106,7 @@ int main()
 				_result.cpu_time,
 				_result.real_time,
 				_result.memory,
+				_result.signal,
 				_result.exit_code,
 				_result.result,
 				_result.error_msg);
