@@ -153,7 +153,7 @@ void *timeout_killer(void *timeout_killer_args) {
 }
 
 void init_result(struct result *_result) {
-    _result->result = _result->error = SUCCESS;
+    _result->result = SUCCESS;
     _result->cpu_time = _result->real_time = _result->signal = _result->exit_code = 0;
     _result->memory = 0;
 }
