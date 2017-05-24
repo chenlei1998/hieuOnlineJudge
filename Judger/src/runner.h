@@ -7,6 +7,7 @@
 #define DUP2_FAILED "dup2 failed"
 #define SETRLIMIT_FAILED "setrlimit failed"
 #define PTHREAD_FAILED "pthread failed"
+#define LOAD_SECCOMP_FAILED "load seccomp failed"
 #define UNLIMITED -1
 #define ARGS_MAX_NUMBER 256
 #define ENV_MAX_NUMBER 256

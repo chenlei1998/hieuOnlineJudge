@@ -1,6 +1,3 @@
-/*
-source code from https://github.com/QingdaoU/Judger
-*/
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
@@ -12,6 +9,7 @@ source code from https://github.com/QingdaoU/Judger
 #include <string.h>
 #include <sys/resource.h>
 
+#include "rules/seccomp_rules.h"
 #include "runner.h"
 
 static int child_process(struct config *_config, struct result *_result)
@@ -47,7 +45,8 @@ static int child_process(struct config *_config, struct result *_result)
     {
         struct rlimit max_cpu_time;
         max_cpu_time.rlim_cur = max_cpu_time.rlim_max = (rlim_t) ((_config->max_cpu_time + 1000) / 1000);
-        if (setrlimit(RLIMIT_CPU, &max_cpu_time) != 0) {
+        if (setrlimit(RLIMIT_CPU, &max_cpu_time) != 0)
+        {
             CHILD_ERROR_RETURN(SETRLIMIT_FAILED);
         }
     }
@@ -77,7 +76,8 @@ static int child_process(struct config *_config, struct result *_result)
     if (_config->input_path != NULL)
     {
         input_file = fopen(_config->input_path, "r");
-        if (input_file == NULL) {
+        if (input_file == NULL)
+        {
             CHILD_ERROR_RETURN(DUP2_FAILED);
         }
         // redirect file -> stdin
@@ -92,7 +92,8 @@ static int child_process(struct config *_config, struct result *_result)
     if (_config->output_path != NULL)
     {
         output_file = fopen(_config->output_path, "w");
-        if (output_file == NULL) {
+        if (output_file == NULL)
+        {
             CHILD_ERROR_RETURN(DUP2_FAILED);
         }
         // redirect stdout -> file
@@ -123,36 +124,67 @@ static int child_process(struct config *_config, struct result *_result)
             CHILD_ERROR_RETURN(DUP2_FAILED);
         }
     }
+    
+    // load seccomp
+    if (_config->seccomp_rule_name != NULL)
+    {
+        if (strcmp("c_cpp", _config->seccomp_rule_name) == 0)
+        {
+            if (c_cpp_seccomp_rules(_config) != SUCCESS)
+            {
+                CHILD_ERROR_RETURN(LOAD_SECCOMP_FAILED);
+            }
+        }
+        else if (strcmp("general", _config->seccomp_rule_name) == 0)
+        {
+            if (general_seccomp_rules(_config) != SUCCESS )
+            {
+                CHILD_ERROR_RETURN(LOAD_SECCOMP_FAILED);
+            }
+        }
+        // other rules
+        else
+        {
+            // rule does not exist
+            CHILD_ERROR_RETURN(LOAD_SECCOMP_FAILED);
+        }
+    }
     execve(_config->exe_path, _config->args, _config->env);
     CHILD_ERROR_RETURN(EXECVE_FAILED);
 }
 
-static int kill_pid(pid_t pid) {
+static int kill_pid(pid_t pid)
+{
     return kill(pid, SIGKILL);
 }
 
-void *timeout_killer(void *timeout_killer_args) {
+void *timeout_killer(void *timeout_killer_args)
+{
     // this is a new thread, kill the process if timeout
     pid_t pid = ((struct timeout_killer_args *)timeout_killer_args)->pid;
     int timeout = ((struct timeout_killer_args *)timeout_killer_args)->timeout;
     // On success, pthread_detach() returns 0; on error, it returns an error number.
-    if (pthread_detach(pthread_self()) != 0) {
+    if (pthread_detach(pthread_self()) != 0)
+    {
         kill_pid(pid);
         return NULL;
     }
     // usleep can't be used, for time args must < 1000ms
     // this may sleep longer that expected, but we will have a check at the end
-    if (sleep((unsigned int)timeout) != 0) {
+    if (sleep((unsigned int)timeout) != 0)
+    {
         kill_pid(pid);
         return NULL;
     }
-    if (kill_pid(pid) != 0) {
+    if (kill_pid(pid) != 0)
+    {
         return NULL;
     }
     return NULL;
 }
 
-void init_result(struct result *_result) {
+void init_result(struct result *_result)
+{
     _result->result = SUCCESS;
     _result->cpu_time = _result->real_time = _result->signal = _result->exit_code = 0;
     _result->memory = 0;
@@ -176,12 +208,14 @@ void run(struct config *_config, struct result *_result)
     {
         // create new thread to monitor process running time
         pthread_t tid = 0;
-        if (_config->max_real_time != UNLIMITED) {
+        if (_config->max_real_time != UNLIMITED)
+        {
             struct timeout_killer_args killer_args;
 
             killer_args.timeout = _config->max_real_time;
             killer_args.pid = child_pid;
-            if (pthread_create(&tid, NULL, timeout_killer, (void *) (&killer_args)) != 0) {
+            if (pthread_create(&tid, NULL, timeout_killer, (void *) (&killer_args)) != 0)
+            {
                 kill_pid(child_pid);
                 RUN_ERROR_RETURN(PTHREAD_FAILED);
             }
@@ -193,14 +227,17 @@ void run(struct config *_config, struct result *_result)
         // wait for child process to terminate
         // on success, returns the process ID of the child whose state has changed;
         // On error, -1 is returned.
-        if (wait4(child_pid, &status, WSTOPPED, &resource_usage) == -1) {
+        if (wait4(child_pid, &status, WSTOPPED, &resource_usage) == -1)
+        {
             kill_pid(child_pid);
             RUN_ERROR_RETURN(WAIT_FAILED);
         }
 
         // process exited, we may need to cancel timeout killer thread
-        if (_config->max_real_time != UNLIMITED) {
-            if (pthread_cancel(tid) != 0) {
+        if (_config->max_real_time != UNLIMITED)
+        {
+            if (pthread_cancel(tid) != 0)
+            {
 
             };
         }
@@ -216,36 +253,47 @@ void run(struct config *_config, struct result *_result)
         gettimeofday(&end, NULL);
         _result->real_time = (int) (end.tv_sec * 1000 + end.tv_usec / 1000 - start.tv_sec * 1000 - start.tv_usec / 1000);
 
-        if (_result->exit_code != 0) {
+        if (_result->exit_code != 0)
+        {
             _result->result = RUNTIME_ERROR;
         }
         // if signaled
-        if (WIFSIGNALED(status) != 0) {
+        if (WIFSIGNALED(status) != 0)
+        {
             _result->signal = WTERMSIG(status);
-            if (_result->signal == SIGSEGV) {
-                if (_config->max_memory != UNLIMITED && _result->memory > _config->max_memory) {
+            if (_result->signal == SIGSEGV)
+            {
+                if (_config->max_memory != UNLIMITED && _result->memory > _config->max_memory)
+                {
                     _result->result = MEMORY_LIMIT_EXCEEDED;
                 }
-                else {
+                else
+                {
                     _result->result = RUNTIME_ERROR;
                 }
             }
-            else if(_result->signal == SIGUSR1) {
+            else if(_result->signal == SIGUSR1)
+            {
                 _result->result = SYSTEM_ERROR;
             }
-            else {
+            else
+            {
                 _result->result = RUNTIME_ERROR;
             }
         }
-        else {
-            if (_config->max_memory != UNLIMITED && _result->memory > _config->max_memory) {
+        else 
+        {
+            if (_config->max_memory != UNLIMITED && _result->memory > _config->max_memory)
+            {
                 _result->result = MEMORY_LIMIT_EXCEEDED;
             }
         }
-        if (_config->max_real_time != UNLIMITED && _result->real_time > _config->max_real_time) {
+        if (_config->max_real_time != UNLIMITED && _result->real_time > _config->max_real_time)
+        {
             _result->result = REAL_TIME_LIMIT_EXCEEDED;
         }
-        if (_config->max_cpu_time != UNLIMITED && _result->cpu_time > _config->max_cpu_time) {
+        if (_config->max_cpu_time != UNLIMITED && _result->cpu_time > _config->max_cpu_time)
+        {
             _result->result = CPU_TIME_LIMIT_EXCEEDED;
         }
     }
