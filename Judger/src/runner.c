@@ -1,3 +1,6 @@
+/*
+source code from https://github.com/QingdaoU/Judger
+*/
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
@@ -11,7 +14,7 @@
 
 #include "runner.h"
 
-int child_process(struct config *_config, struct result *_result)
+static int child_process(struct config *_config, struct result *_result)
 {
     FILE *output_file = NULL;
     FILE *input_file = NULL;
@@ -32,7 +35,7 @@ int child_process(struct config *_config, struct result *_result)
     if (_config->max_memory != UNLIMITED)
     {
         struct rlimit max_memory;
-        max_memory.rlim_cur = max_memory.rlim_max = (rlim_t) (_config->max_memory);
+        max_memory.rlim_cur = max_memory.rlim_max = (rlim_t) (_config->max_memory * 2);
         if (setrlimit(RLIMIT_AS, &max_memory) != 0)
         {
             CHILD_ERROR_RETURN(SETRLIMIT_FAILED);
@@ -43,7 +46,7 @@ int child_process(struct config *_config, struct result *_result)
     if (_config->max_cpu_time != UNLIMITED)
     {
         struct rlimit max_cpu_time;
-        max_cpu_time.rlim_cur = max_cpu_time.rlim_max = (rlim_t) (_config->max_cpu_time);
+        max_cpu_time.rlim_cur = max_cpu_time.rlim_max = (rlim_t) ((_config->max_cpu_time + 1000) / 1000);
         if (setrlimit(RLIMIT_CPU, &max_cpu_time) != 0) {
             CHILD_ERROR_RETURN(SETRLIMIT_FAILED);
         }
@@ -124,7 +127,7 @@ int child_process(struct config *_config, struct result *_result)
     CHILD_ERROR_RETURN(EXECVE_FAILED);
 }
 
-int kill_pid(pid_t pid) {
+static int kill_pid(pid_t pid) {
     return kill(pid, SIGKILL);
 }
 
@@ -149,8 +152,15 @@ void *timeout_killer(void *timeout_killer_args) {
     return NULL;
 }
 
+void init_result(struct result *_result) {
+    _result->result = _result->error = SUCCESS;
+    _result->cpu_time = _result->real_time = _result->signal = _result->exit_code = 0;
+    _result->memory = 0;
+}
+
 void run(struct config *_config, struct result *_result)
 {
+    init_result(_result);
     struct timeval start, end;
     gettimeofday(&start, NULL);
     pid_t child_pid = fork();

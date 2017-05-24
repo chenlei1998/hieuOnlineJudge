@@ -79,6 +79,6 @@ struct timeout_killer_args
     int pid;
     int timeout;
 };
-
+void init_result(struct result *_result);
 void run(struct config *_config, struct result *_result);
 #endif
