@@ -8,7 +8,7 @@
 int main()
 {
     char buffer[BUF_SIZE];
-    scanf("%s", buffer);
+    (void)scanf("%s", buffer);
     cJSON *root;
     root = cJSON_Parse(buffer);
     if (cJSON_IsObject(root))
