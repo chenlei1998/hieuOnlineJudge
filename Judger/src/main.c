@@ -8,7 +8,14 @@
 int main(int argc, char *argv[])
 {
     char buffer[BUF_SIZE];
-    scanf("%s", buffer);
+    if (argc == 2)
+    {
+        strcpy(buffer, argv[1]);
+    }
+    else 
+    {
+        goto invalid_config;
+    }
     cJSON *root;
     root = cJSON_Parse(buffer);
     if (cJSON_IsObject(root))
