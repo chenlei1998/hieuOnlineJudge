@@ -5,7 +5,7 @@
 #define LONGVALUE(item) (long)(item->valuedouble)
 #define INTVALUE(item) (item->valueint)
 #define STRVALUE(item) (item->valuestring)
-int main()
+int main(int argc, char *argv[])
 {
     char buffer[BUF_SIZE];
     scanf("%s", buffer);
