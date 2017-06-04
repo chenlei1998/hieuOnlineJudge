@@ -1,6 +1,7 @@
 #ifndef SANDBOX
 #define SANDBOX
 
+#define INVALID_CONFIG "invalid config"
 #define FORK_FAILED "fork failed"
 #define WAIT_FAILED "wait failed"
 #define EXECVE_FAILED "execve failed"
@@ -12,24 +13,23 @@
 #define UNLIMITED -1
 #define ARGS_MAX_NUMBER 256
 #define ENV_MAX_NUMBER 256
-#define MSGLEN 128
 
 #define CHILD_ERROR_RETURN(msg)\
     {\
+        fprintf(stderr, "%s\n", msg);\
         fflush(stdout);\
         fflush(stderr);\
         fclose(input_file);\
         fclose(output_file);\
         fclose(error_file);\
-        _result->error_msg = msg;\
         raise(SIGUSR1);\
         return -1;\
     }
 
 #define RUN_ERROR_RETURN(msg)\
     {\
+        fprintf(stderr, "%s\n", msg);\
         _result->result = SYSTEM_ERROR;\
-        _result->error_msg = msg;\
         return;\
     }
     
@@ -69,7 +69,6 @@ struct result
     int signal;
     int exit_code;
     int result;
-    char *error_msg;
 };
 
 struct timeout_killer_args

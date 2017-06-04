@@ -74,8 +74,7 @@ int main(int argc, char *argv[])
             _config.max_output_size = LONGVALUE(max_output_size);
             _config.input_path = STRVALUE(input_path);
             _config.output_path = STRVALUE(output_path);
-            //_config.error_path = STRVALUE(error_path);
-            _config.error_path = NULL;
+            _config.error_path = STRVALUE(error_path);
             _config.exe_path = STRVALUE(exe_path);
             _config.seccomp_rule_name = STRVALUE(seccomp_rule_name);
             _config.args[0] = _config.exe_path;
@@ -114,7 +113,6 @@ int main(int argc, char *argv[])
             cJSON_AddNumberToObject(json_result, "realTime", _result.real_time);
             cJSON_AddNumberToObject(json_result, "memory", _result.memory);
             cJSON_AddNumberToObject(json_result, "result", _result.result);
-            cJSON_AddStringToObject(json_result, "errorMsg", _result.error_msg);
             fputs(cJSON_Print(json_result), stdout);
         }
         else
@@ -126,8 +124,7 @@ int main(int argc, char *argv[])
         return 0;
     }
 invalid_config:
-    cJSON_AddStringToObject(json_result, "errorMsg", "invalid config");
-    fputs(cJSON_Print(json_result), stderr);
+    fprintf(stderr, "%s\n", INVALID_CONFIG);
     cJSON_Delete(json_result);
     cJSON_Delete(json_config);
     return -1;
