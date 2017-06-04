@@ -115,7 +115,7 @@ int main(int argc, char *argv[])
             cJSON_AddNumberToObject(json_config, "memory", _result.memory);
             cJSON_AddNumberToObject(json_config, "result", _result.result);
             cJSON_AddStringToObject(json_config, "errorMsg", _result.errorMsg);
-            fprintf(stdout, cJSON_Print(json_result));
+            fputs(stdout, cJSON_Print(json_result));
         }
         else
         {
@@ -129,6 +129,6 @@ invalid_config:
         cJSON_AddStringToObject(json_config, "errorMsg", "invalid config");
         cJSON_Delete(json_result);
         cJSON_Delete(json_config);
-        fprintf(stderr, cJSON_Print(json_result));
+        fputs(stderr, cJSON_Print(json_result));
         return -1;
 }
