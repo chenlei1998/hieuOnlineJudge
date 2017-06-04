@@ -25,6 +25,8 @@ dependencies {
 
     // Use JUnit test framework
     testCompile 'junit:junit:4.12'
+
+    compile group: 'com.fasterxml.jackson.core', name: 'jackson-core', version: '2.8.8'
 }
 
 tasks.withType(JavaCompile) {
