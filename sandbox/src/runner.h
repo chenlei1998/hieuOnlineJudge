@@ -16,10 +16,12 @@
 
 #define CHILD_ERROR_RETURN(msg)\
     {\
+        fflush(stdout);\
+        fflush(stderr);\
         fclose(input_file);\
         fclose(output_file);\
         fclose(error_file);\
-        strcpy(_result->error_msg, msg);\
+        _result->error_msg = msg;\
         raise(SIGUSR1);\
         return -1;\
     }
@@ -27,7 +29,7 @@
 #define RUN_ERROR_RETURN(msg)\
     {\
         _result->result = SYSTEM_ERROR;\
-        strcpy(_result->error_msg, msg);\
+        _result->error_msg = msg;\
         return;\
     }
     
@@ -67,7 +69,7 @@ struct result
     int signal;
     int exit_code;
     int result;
-    char error_msg[MSGLEN];
+    char *error_msg;
 };
 
 struct timeout_killer_args

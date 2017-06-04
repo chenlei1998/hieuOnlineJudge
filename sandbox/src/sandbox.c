@@ -74,13 +74,13 @@ int main(int argc, char *argv[])
             _config.max_output_size = LONGVALUE(max_output_size);
             _config.input_path = STRVALUE(input_path);
             _config.output_path = STRVALUE(output_path);
-            _config.error_path = STRVALUE(error_path);
+            //_config.error_path = STRVALUE(error_path);
+            _config.error_path = NULL;
             _config.exe_path = STRVALUE(exe_path);
             _config.seccomp_rule_name = STRVALUE(seccomp_rule_name);
             _config.args[0] = _config.exe_path;
             _config.args[1] = NULL;
             _config.env[0] = NULL;
-            _config.error_path = NULL;
             if (cJSON_IsArray(args))
             {
                 int index;
@@ -98,7 +98,7 @@ int main(int argc, char *argv[])
             if (cJSON_IsArray(env))
             {
                 int index = 0;
-                for (int i = 0; i < ARGS_MAX_NUMBER && i < cJSON_GetArraySize(env); i++)
+                for (int i = 0; i < ENV_MAX_NUMBER && i < cJSON_GetArraySize(env); i++)
                 {
                     cJSON *item = cJSON_GetArrayItem(env, i);
                     if (cJSON_IsString(item))
