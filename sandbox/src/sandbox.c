@@ -114,7 +114,7 @@ int main(int argc, char *argv[])
             cJSON_AddNumberToObject(json_config, "realTime", _result.real_time);
             cJSON_AddNumberToObject(json_config, "memory", _result.memory);
             cJSON_AddNumberToObject(json_config, "result", _result.result);
-            cJSON_AddStringToObject(json_config, "errorMsg", _result.errorMsg);
+            cJSON_AddStringToObject(json_config, "errorMsg", _result.error_msg);
             fputs(cJSON_Print(json_result), stdout);
         }
         else
