@@ -1,5 +1,5 @@
-#ifndef JUDGER
-#define JUDGER
+#ifndef SANDBOX
+#define SANDBOX
 
 #define FORK_FAILED "fork failed"
 #define WAIT_FAILED "wait failed"
