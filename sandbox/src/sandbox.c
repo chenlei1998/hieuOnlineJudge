@@ -11,6 +11,7 @@ int main(int argc, char *argv[])
     char buffer[BUF_SIZE];
     cJSON *json_config = NULL;
     cJSON *json_result = NULL;
+    json_result = cJSON_CreateObject();
     if (argc == 2)
     {
         strcpy(buffer, argv[1]);
@@ -19,7 +20,6 @@ int main(int argc, char *argv[])
     {
         goto invalid_config;
     }
-    json_result = cJSON_CreateObject();
     json_config = cJSON_Parse(buffer);
     if (cJSON_IsObject(json_config))
     {
