@@ -110,11 +110,11 @@ int main(int argc, char *argv[])
             }
             struct result _result;
             run(&_config, &_result);
-            cJSON_AddNumberToObject(json_config, "cpuTime", _result.cpu_time);
-            cJSON_AddNumberToObject(json_config, "realTime", _result.real_time);
-            cJSON_AddNumberToObject(json_config, "memory", _result.memory);
-            cJSON_AddNumberToObject(json_config, "result", _result.result);
-            cJSON_AddStringToObject(json_config, "errorMsg", _result.error_msg);
+            cJSON_AddNumberToObject(json_result, "cpuTime", _result.cpu_time);
+            cJSON_AddNumberToObject(json_result, "realTime", _result.real_time);
+            cJSON_AddNumberToObject(json_result, "memory", _result.memory);
+            cJSON_AddNumberToObject(json_result, "result", _result.result);
+            cJSON_AddStringToObject(json_result, "errorMsg", _result.error_msg);
             fputs(cJSON_Print(json_result), stdout);
         }
         else
@@ -126,7 +126,7 @@ int main(int argc, char *argv[])
         return 0;
     }
 invalid_config:
-    cJSON_AddStringToObject(json_config, "errorMsg", "invalid config");
+    cJSON_AddStringToObject(json_result, "errorMsg", "invalid config");
     fputs(cJSON_Print(json_result), stderr);
     cJSON_Delete(json_result);
     cJSON_Delete(json_config);
