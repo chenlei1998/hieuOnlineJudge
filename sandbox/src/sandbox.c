@@ -126,9 +126,9 @@ int main(int argc, char *argv[])
         return 0;
     }
 invalid_config:
-        cJSON_AddStringToObject(json_config, "errorMsg", "invalid config");
-        fputs(cJSON_Print(json_result), stderr);
-        cJSON_Delete(json_result);
-        cJSON_Delete(json_config);
-        return -1;
+    cJSON_AddStringToObject(json_config, "errorMsg", "invalid config");
+    fputs(cJSON_Print(json_result), stderr);
+    cJSON_Delete(json_result);
+    cJSON_Delete(json_config);
+    return -1;
 }
