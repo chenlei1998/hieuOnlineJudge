@@ -114,7 +114,7 @@ class Judge(object):
             # if self._lang in ['GCC', 'G++']:
             #    resource.setrlimit(resource.RLIMIT_AS, (self._memory_upper_bound, ) * 2)
             os.chdir(self._work_dir)
-            # redirect_std_stream(True, True, True)
+            redirect_std_stream(True, True, True)
             path = ctypes.create_string_buffer(os.path.abspath(run_cmd[0]))
             arglist = run_cmd[1:]
             array_cls = ctypes.POINTER(ctypes.c_char) * (len(arglist) + 1)
@@ -218,7 +218,7 @@ def unit_test():
     compiler = CodeCompiler(commands=commands, target_file_size=settings.get('TARGET_FILE_SIZE'),
                             memory_upper_bound=settings.get('MEMORY_UPPER_BOUND'))
 
-    work_dir = settings.get('WORK_DIR')
+    work_dir = settings.get('ROOT_WORK_DIR')
     ac_code = """
         #include <iostream>
         int main() {
